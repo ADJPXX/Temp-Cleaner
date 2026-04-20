@@ -26,9 +26,9 @@ class Program
         LimparArquivos(pathTemp);
         LimparPastas(pathTemp);
         
-        LimparLixeira();
-
         LimparScreenshots(pastaScreenshots);
+        
+        LimparLixeira();
     }
 
     
@@ -75,13 +75,6 @@ class Program
     {
         try
         {
-            startInfo.FileName = "cmd.exe";
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.Arguments = "Clear-RecycleBin -Force";
-
-            Process.Start(startInfo);
-            
-            
             foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
                 startInfo.FileName = "cmd.exe";
@@ -90,6 +83,12 @@ class Program
 
                 Process.Start(startInfo);
             }
+            
+            startInfo.FileName = "cmd.exe";
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.Arguments = "Clear-RecycleBin -Force";
+
+            Process.Start(startInfo);
         }
 
         catch (Exception ex)
