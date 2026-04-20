@@ -4,7 +4,9 @@ namespace TempCleaner;
 
 class Program
 {
-    static void Main(string[] args)
+    private static ProcessStartInfo startInfo = new();
+    
+    private static void Main(string[] args)
     {
         string tempPorcentagem = Path.GetTempPath();
         
@@ -13,6 +15,10 @@ class Program
         string windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
         
         string pathTemp = Path.Combine(windows, temp);
+        
+        string pastaImagens = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+
+        string pastaScreenshots = Path.Combine(pastaImagens, "Screenshots");
 
         LimparArquivos(tempPorcentagem);
         LimparPastas(tempPorcentagem);
@@ -21,10 +27,12 @@ class Program
         LimparPastas(pathTemp);
         
         LimparLixeira();
+
+        LimparScreenshots(pastaScreenshots);
     }
 
     
-    static void LimparArquivos(string temp)
+    private static void LimparArquivos(string temp)
     {
         foreach (string file in Directory.GetFiles(temp))
         {
@@ -44,7 +52,7 @@ class Program
     }
 
 
-    static void LimparPastas(string temp)
+    private static void LimparPastas(string temp)
     {
         foreach (string file in Directory.GetDirectories(temp))
         {
@@ -63,12 +71,10 @@ class Program
     }
 
 
-    static void LimparLixeira()
+    private static void LimparLixeira()
     {
         try
         {
-            ProcessStartInfo startInfo = new();
-
             startInfo.FileName = "cmd.exe";
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.Arguments = "Clear-RecycleBin -Force";
@@ -89,6 +95,23 @@ class Program
         catch (Exception ex)
         {
             Console.WriteLine($"FALHA AO DELETAR O ARQUIVO! ERRO: {ex.Message}");
+        }
+    }
+
+    
+    private static void LimparScreenshots(string screenshots)
+    {
+        try
+        {
+            startInfo.FileName = "cmd.exe";
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            startInfo.Arguments = $"/c rd /s /q {screenshots}";
+
+            Process.Start(startInfo);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"FALHA AO DELETAR A PASTA DE SCREENSHOTS. ERRO: {ex.Message}");
         }
     }
 }
