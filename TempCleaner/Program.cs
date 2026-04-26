@@ -2,7 +2,7 @@
 
 namespace TempCleaner;
 
-class Program
+static class Program
 {
     private static ProcessStartInfo startInfo = new();
     
@@ -19,7 +19,7 @@ class Program
         string pastaImagens = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
         string pastaScreenshots = Path.Combine(pastaImagens, "Screenshots");
-
+        
         LimparArquivos(tempPorcentagem);
         LimparPastas(tempPorcentagem);
 
