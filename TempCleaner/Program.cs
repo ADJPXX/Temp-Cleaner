@@ -2,23 +2,23 @@
 
 namespace TempCleaner;
 
-static class Program
+public static class Program
 {
-    private static ProcessStartInfo startInfo = new();
+    private static readonly ProcessStartInfo StartInfo = new();
     
-    private static void Main(string[] args)
+    public static void Main(string[] args)
     {
-        string tempPorcentagem = Path.GetTempPath();
+        var tempPorcentagem = Path.GetTempPath();
         
-        string temp = "Temp";
+        const string temp = "Temp";
         
-        string windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+        var windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
         
-        string pathTemp = Path.Combine(windows, temp);
+        var pathTemp = Path.Combine(windows, temp);
         
-        string pastaImagens = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+        var pastaImagens = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
 
-        string pastaScreenshots = Path.Combine(pastaImagens, "Screenshots");
+        var pastaScreenshots = Path.Combine(pastaImagens, "Screenshots");
         
         LimparArquivos(tempPorcentagem);
         LimparPastas(tempPorcentagem);
@@ -34,7 +34,7 @@ static class Program
     
     private static void LimparArquivos(string temp)
     {
-        foreach (string file in Directory.GetFiles(temp))
+        foreach (var file in Directory.GetFiles(temp))
         {
             try
             {
@@ -54,7 +54,7 @@ static class Program
 
     private static void LimparPastas(string temp)
     {
-        foreach (string file in Directory.GetDirectories(temp))
+        foreach (var file in Directory.GetDirectories(temp))
         {
             try
             {
@@ -75,20 +75,20 @@ static class Program
     {
         try
         {
-            foreach (DriveInfo drive in DriveInfo.GetDrives())
+            foreach (var drive in DriveInfo.GetDrives())
             {
-                startInfo.FileName = "cmd.exe";
-                startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                startInfo.Arguments = $"/c rd /s /q {drive}$RECYCLE.BIN";
+                StartInfo.FileName = "cmd.exe";
+                StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                StartInfo.Arguments = $"/c rd /s /q {drive}$RECYCLE.BIN";
 
-                Process.Start(startInfo);
+                Process.Start(StartInfo);
             }
             
-            startInfo.FileName = "cmd.exe";
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.Arguments = "Clear-RecycleBin -Force";
+            StartInfo.FileName = "cmd.exe";
+            StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            StartInfo.Arguments = "Clear-RecycleBin -Force";
 
-            Process.Start(startInfo);
+            Process.Start(StartInfo);
         }
 
         catch (Exception ex)
@@ -102,11 +102,11 @@ static class Program
     {
         try
         {
-            startInfo.FileName = "cmd.exe";
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.Arguments = $"/c rd /s /q {screenshots}";
+            StartInfo.FileName = "cmd.exe";
+            StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            StartInfo.Arguments = $"/c rd /s /q {screenshots}";
 
-            Process.Start(startInfo);
+            Process.Start(StartInfo);
         }
         catch (Exception ex)
         {
