@@ -1,13 +1,40 @@
 ﻿using System.Diagnostics;
+using System.Security.Principal;
 
 namespace TempCleaner;
 
 public static class Program
 {
-    private static readonly ProcessStartInfo StartInfo = new();
+    private static bool IsAdmin()
+    {
+        var identity = WindowsIdentity.GetCurrent();
+        var principal = new WindowsPrincipal(identity);
+        return principal.IsInRole(WindowsBuiltInRole.Administrator);
+    }
     
     public static void Main(string[] args)
     {
+        if (!IsAdmin())
+        {
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = Process.GetCurrentProcess().MainModule!.FileName,
+                UseShellExecute = true,
+                Verb = "runas"
+            };
+
+            try
+            {
+                Process.Start(startInfo);
+            }
+            catch
+            {
+                Console.WriteLine("Permissão de administrador negada.");
+            }
+
+            return;
+        }
+        
         var tempPorcentagem = Path.GetTempPath();
         
         const string temp = "Temp";
@@ -77,18 +104,24 @@ public static class Program
         {
             foreach (var drive in DriveInfo.GetDrives())
             {
-                StartInfo.FileName = "cmd.exe";
-                StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                StartInfo.Arguments = $"/c rd /s /q {drive}$RECYCLE.BIN";
+                var lixeiraDrive = Process.Start(new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    Arguments = $"/c rd /s /q \"{drive.Name}$RECYCLE.BIN\""
+                });
 
-                Process.Start(StartInfo);
+                lixeiraDrive?.WaitForExit();
             }
-            
-            StartInfo.FileName = "cmd.exe";
-            StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            StartInfo.Arguments = "Clear-RecycleBin -Force";
 
-            Process.Start(StartInfo);
+            var lixeiraWindows = Process.Start(new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Arguments = "/C Clear-RecycleBin -Force"
+            });
+            
+            lixeiraWindows?.WaitForExit();
         }
 
         catch (Exception ex)
@@ -102,11 +135,14 @@ public static class Program
     {
         try
         {
-            StartInfo.FileName = "cmd.exe";
-            StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            StartInfo.Arguments = $"/c rd /s /q {screenshots}";
-
-            Process.Start(StartInfo);
+            var pastaScreenhots = Process.Start(new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                Arguments = $"/C rd /s /q \"{screenshots}\""
+            });
+            
+            pastaScreenhots?.WaitForExit();
         }
         catch (Exception ex)
         {
