@@ -12,8 +12,6 @@ public static class CleanService
             {
                 LogService.AddLog($"ARQUIVO ALVO: {file}");
                 
-                Console.WriteLine($"ARQUIVO ALVO: {file}");
-                
                 File.SetAttributes(file, FileAttributes.Normal);
                 
                 File.Delete(file);
@@ -22,14 +20,14 @@ public static class CleanService
                 {
                     LogService.AddLog("ARQUIVO DELETADO!\n");
                 }
+                else
+                {
+                    LogService.AddLog("FALHA: ARQUIVO AINDA EXISTE!\n");
+                }
             }
             catch (Exception ex)
             {
                 LogService.AddLog($"FALHA AO DELETAR O ARQUIVO, ERRO: {ex.Message}\n");
-                
-                Console.WriteLine($"FALHA AO DELETAR O ARQUIVO: {file}");
-                
-                Console.WriteLine($"ERRO: {ex.Message}\n");
             }
         }
     }
@@ -43,22 +41,20 @@ public static class CleanService
             {
                 LogService.AddLog($"PASTA ALVO: {file}");
                 
-                Console.WriteLine($"PASTA ALVO: {file}");
-                
                 Directory.Delete(file, true);
 
                 if (!Directory.Exists(file))
                 {
                     LogService.AddLog("PASTA DELETADA!\n");
                 }
+                else
+                {
+                    LogService.AddLog("FALHA: ARQUIVO AINDA EXISTE!\n");
+                }
             }
             catch (Exception ex)
             {
                 LogService.AddLog($"FALHA AO DELETAR A PASTA, ERRO: {ex.Message}\n");
-                
-                Console.WriteLine($"FALHA AO DELETAR A PASTA: {file}");
-                
-                Console.WriteLine($"ERRO: {ex.Message}\n");
             }
         }
     }
@@ -70,7 +66,7 @@ public static class CleanService
         {
             foreach (var drive in DriveInfo.GetDrives())
             {
-                if (drive.Name.Contains(@"G:\"))
+                if (drive.Name.Equals(@"G:\", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -99,9 +95,7 @@ public static class CleanService
 
         catch (Exception ex)
         {
-            LogService.AddLog($"FALHA AO DELETAR O ARQUIVO! ERRO: {ex.Message}\n");
-            
-            Console.WriteLine($"FALHA AO DELETAR O ARQUIVO! ERRO: {ex.Message}");
+            LogService.AddLog($"FALHA AO LIMPAR A LIXEIRA --- ERRO: {ex.Message}\n");
         }
     }
 
@@ -121,7 +115,7 @@ public static class CleanService
             
             pastaScreenhots?.WaitForExit();
 
-            if (!Directory.Exists(screenshots))
+            if (!Directory.Exists(screenshots) && pastaScreenhots?.ExitCode == 0)
             {
                 LogService.AddLog("PASTA \"Screenshots\" DELETADA COM SUCESSO!");
             }
@@ -132,7 +126,7 @@ public static class CleanService
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"FALHA AO DELETAR A PASTA DE SCREENSHOTS. ERRO: {ex.Message}");
+            LogService.AddLog($"FALHA AO DELETAR A PASTA DE SCREENSHOTS. ERRO: {ex.Message}");
         }
     }
 }
