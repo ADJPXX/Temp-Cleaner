@@ -104,6 +104,13 @@ public static class CleanService
     {
         try
         {
+            if (!Directory.Exists(screenshots))
+            {
+                LogService.AddLog("PASTA \"Screenshots\" NÃO EXISTE, NADA FOI DELETADO!");
+
+                return;
+            }
+            
             var pastaScreenhots = Process.Start(new ProcessStartInfo
             {
                 FileName = "cmd.exe",
